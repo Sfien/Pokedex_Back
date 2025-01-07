@@ -1,24 +1,43 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+const { MongoClient } = require('mongodb');
 
-// Charger les variables d'environnement
-dotenv.config();
-
-// Initialiser Express
+// Crée une instance d'application Express
 const app = express();
 
-// Middleware pour parser le JSON
-app.use(express.json());
+// URL de connexion à MongoDB
+const url = 'mongodb+srv://pokedex_user:CaWjES5osrpNVKvD@clusterpokedex.2refs.mongodb.net/';
+const dbName = 'poke_Pokedex';
 
-// Connexion à MongoDB
-mongoose.connect("mongodb+srv://pokedex_user:CaWjES5osrpNVKvD@clusterpokedex.2refs.mongodb.net/")
-    .then(() => console.log('Connected to MongoDB'))
-    .catch(err => console.error('Failed to connect to MongoDB', err));
+// Crée une instance de client MongoDB
+const client = new MongoClient(url);
 
-// Définir les routes
-app.use('/api/pokemons', require('./routes/pokemons'));
+// Middleware pour se connecter à la base de données MongoDB
+app.use(async (req, res, next) => {
+  try {
+    await client.connect();
+    console.log('Connexion à MongoDB réussie');
+    req.db = client.db(dbName); // Met la base de données dans l'objet `req`
+    next();
+  } catch (err) {
+    console.error('Erreur de connexion à MongoDB', err);
+    res.status(500).send('Erreur de connexion à MongoDB');
+  }
+});
 
-// Démarrer le serveur
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Route pour récupérer tous les Pokémon du Pokedex
+app.get('/', async (req, res) => {
+  try {
+    const pokemonsCollection = req.db.collection('Pokedex');
+    const pokemons = await pokemonsCollection.find().toArray();
+    res.json(pokemons);
+  } catch (err) {
+    res.status(500).send('Erreur du serveur');
+  }
+});
+
+
+// Démarrer le serveur sur le port 3000
+app.listen(3000, () => {
+  console.log('Serveur en cours d\'exécution sur le port 3000');
+});
+
