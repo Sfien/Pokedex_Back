@@ -1,20 +1,24 @@
 const express = require('express');
-const cors = require('cors');
-const pokemonRoutes = require('./pokemonRoutes'); // Importez les routes Pokémon
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
+// Charger les variables d'environnement
+dotenv.config();
+
+// Initialiser Express
 const app = express();
-const port = 3000;
 
-// Middleware pour parser le corps des requêtes en JSON
+// Middleware pour parser le JSON
 app.use(express.json());
 
-// Activer CORS pour permettre les requêtes depuis le front-end
-app.use(cors());
+// Connexion à MongoDB
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('Failed to connect to MongoDB', err));
 
-// Utilisation des routes
-app.use('/api', pokemonRoutes); // Toutes les routes seront accessibles via /api
+// Définir les routes
+app.use('/api/pokemons', require('./routes/pokemons'));
 
 // Démarrer le serveur
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Server is running on port ${port}`);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
