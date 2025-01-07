@@ -35,9 +35,34 @@ app.get('/', async (req, res) => {
   }
 });
 
+// Route pour récupérer un Pokémon par son ID (champ `id` entier)
+app.get('/pokemon/:id', async (req, res) => {
+  try {
+    const { id } = req.params; // Récupère l'ID du Pokémon depuis les paramètres de l'URL
+    const pokemonId = parseInt(id, 10); // Convertir l'ID en entier
+
+    // Vérifie si la conversion a échoué
+    if (isNaN(pokemonId)) {
+      return res.status(400).send('ID invalide');
+    }
+
+    const pokemonsCollection = req.db.collection('Pokedex');
+    
+    // Cherche le Pokémon par son champ `id` entier
+    const pokemon = await pokemonsCollection.findOne({ id: pokemonId });
+
+    if (pokemon) {
+      res.json(pokemon);
+    } else {
+      res.status(404).send('Pokémon non trouvé');
+    }
+  } catch (err) {
+    console.error('Erreur de récupération du Pokémon', err);
+    res.status(500).send('Erreur du serveur');
+  }
+});
 
 // Démarrer le serveur sur le port 3000
 app.listen(3000, () => {
   console.log('Serveur en cours d\'exécution sur le port 3000');
 });
-
