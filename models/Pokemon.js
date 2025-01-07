@@ -1,16 +1,17 @@
 const mongoose = require('mongoose');
 
 const PokemonSchema = new mongoose.Schema({
-    id: Number,
-    name: String,
-    type: [String],
-    stats: {
-        hp: Number,
-        attack: Number,
-        defense: Number,
-        speed: Number
-    },
-    image: String
+  id: { type: Number, required: true, unique: true },
+  name: { type: String, required: true },
+  type: { type: [String], required: true },
+  stats: {
+    hp: { type: Number },
+    attack: { type: Number },
+    defense: { type: Number },
+    speed: { type: Number },
+  },
+  image: { type: String, required: true },
 });
 
+// Création du modèle avec nom unique 'Pokemon'
 module.exports = mongoose.model('Pokemon', PokemonSchema);
