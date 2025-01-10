@@ -1,18 +1,18 @@
-# Utilise une image officielle Node.js
-FROM node:16
+# Utiliser l'image officielle de Node.js
+FROM node:16 AS builder
 
-# Définit le répertoire de travail
+# Définir le répertoire de travail
 WORKDIR /usr/src/app
 
-# Copie les fichiers et installe les dépendances
+# Copier package.json et installer les dépendances
 COPY package*.json ./
 RUN npm install
 
-# Copie le reste des fichiers
+# Copier tout le code source
 COPY . .
 
-# Expose le port sur lequel l'API fonctionne
+# Exposer le port
 EXPOSE 3000
 
-# Commande pour démarrer l'application
+# Lancer l'application
 CMD ["node", "index.js"]
