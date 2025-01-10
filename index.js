@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');  // 导入 CORS
-const Pokemon = require('./models/pokemon');
+const Pokemon = require('./models/Pokemon');
 const app = express();
 const port = process.env.PORT || 3000;
 
